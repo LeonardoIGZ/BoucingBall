@@ -15,6 +15,7 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Display;
 import android.view.View;
 
@@ -44,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Display display = getWindowManager().getDefaultDisplay();
         height = display.getHeight();
         width = display.getWidth();
+        Log.d("Tamaño de la pantalla", "x "+ width +"y "+height);
 
         //To draw in the view
         Ball ball = new Ball(this);
@@ -69,8 +71,26 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onSensorChanged(SensorEvent sensorEvent) {
         //When the values of 'x' and 'y' axis change I update global variables
         if (sensorEvent.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-            x -= (int) sensorEvent.values[0];
-            y += (int) sensorEvent.values[1];
+
+            //Bounds for X axis
+            if(x + 160 - (int) sensorEvent.values[0] >= width){
+                x = width - 160;
+            }else if(x - (int) sensorEvent.values[0] <= 1){
+                x = 0;
+            }else{
+                x -= (int) sensorEvent.values[0];
+            }
+
+            //Bounds for Y axis
+            if(y + 160 + (int) sensorEvent.values[1] >= height){
+                y = height - 160;
+            }else if(y + (int) sensorEvent.values[1] <= 1){
+                y = 0;
+            }else{
+                y += (int) sensorEvent.values[1];
+            }
+
+            Log.d("Valores de los ejes", "x "+ x +", y "+y);
         }
     }
 
@@ -79,8 +99,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     public class Ball extends View{
-        static final int width = 100;
-        static final int height = 100;
+        static final int width = 160;
+        static final int height = 160;
 
         public Ball(Context context) {
             super(context);

@@ -3,9 +3,11 @@ package com.ligz.boucingball;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.RectF;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
@@ -110,11 +112,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         @Override
         protected void onDraw(Canvas canvas) {
+            Paint p = new Paint(); // set some paint options
+            p.setColor(Color.WHITE);
+
             RectF oval = new RectF(MainActivity.x, MainActivity.y, MainActivity.x + width, MainActivity.y
                     + height); // set bounds of rectangle
-            Paint p = new Paint(); // set some paint options
-            p.setColor(Color.BLUE);
+
+            canvas.drawColor(Color.HSVToColor(new float[]{159,71,11}));
+            //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.field),0,0,null); <--- Draw a background
+
+            //Porterias
+            RectF p1 = new RectF(460, 0, 460+160, 160);
+            canvas.drawRect(p1, p);
+            RectF p2 = new RectF(460, 1930, 460+160, 1930+160);
+            canvas.drawRect(p2, p);
+            //Ball
             canvas.drawOval(oval, p);
+
             invalidate();
         }
     }

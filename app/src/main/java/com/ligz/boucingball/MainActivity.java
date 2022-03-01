@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.RectF;
+import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.ShapeDrawable;
 import android.graphics.drawable.shapes.OvalShape;
@@ -30,10 +31,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private static int x, y;
 
     //Display size
-    private int height, width;
+    private static int height, width;
 
     //To drawing
     ShapeDrawable drawable;
+
+    //Score
+    private static int a = 0, b = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +51,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Display display = getWindowManager().getDefaultDisplay();
         height = display.getHeight();
         width = display.getWidth();
-        Log.d("Tamaño de la pantalla", "x "+ width +"y "+height);
+        //Log.d("Tamaño de la pantalla", "x "+ width +"y "+height);
 
         //To draw in the view
         Ball ball = new Ball(this);
@@ -85,14 +89,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             //Bounds for Y axis
             if(y + 160 + (int) sensorEvent.values[1] >= height){
-                y = height - 160;
+                if(x + 160 >= ((width / 2) - 130) &&  x +160 <= ((width / 2) + 130)){
+                    y = height/2;
+                    x = width/2;
+                    a++;
+                }
+                else{
+                    y = height - 160;
+                }
+
             }else if(y + (int) sensorEvent.values[1] <= 1){
-                y = 0;
+                if(x + 160 >= ((width / 2) - 130) &&  x +160 <= ((width / 2) + 130)){
+                    y = height/2;
+                    x = width/2;
+                    b++;
+                }else{
+                    y = 0;
+                }
+
             }else{
                 y += (int) sensorEvent.values[1];
             }
 
-            Log.d("Valores de los ejes", "x "+ x +", y "+y);
+            //Log.d("Valores de los ejes", "x "+ x +", y "+y);
         }
     }
 
@@ -113,21 +132,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         @Override
         protected void onDraw(Canvas canvas) {
             Paint p = new Paint(); // set some paint options
-            p.setColor(Color.WHITE);
+            p.setColor(Color.rgb(0, 95, 115));
 
             RectF oval = new RectF(MainActivity.x, MainActivity.y, MainActivity.x + width, MainActivity.y
                     + height); // set bounds of rectangle
 
-            canvas.drawColor(Color.HSVToColor(new float[]{159,71,11}));
+            canvas.drawColor(Color.rgb(42, 157, 143));
             //canvas.drawBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.field),0,0,null); <--- Draw a background
 
             //Porterias
-            RectF p1 = new RectF(460, 0, 460+160, 160);
+            RectF p1 = new RectF((MainActivity.width / 2) - 130, 0, (MainActivity.width / 2) + 130, 160);
             canvas.drawRect(p1, p);
-            RectF p2 = new RectF(460, 1930, 460+160, 1930+160);
+            RectF p2 = new RectF((MainActivity.width / 2) - 130, MainActivity.height-160, (MainActivity.width / 2) + 130, MainActivity.height-160+160);
             canvas.drawRect(p2, p);
+
+            //Field lines
+            p.setColor(Color.rgb(0, 95, 115));
+            RectF center = new RectF(0 , (MainActivity.height/2)-5, MainActivity.width , (MainActivity.height/2) + 5);
+            canvas.drawRect(center, p);
+            canvas.drawCircle(MainActivity.width/2, MainActivity.height/2, 150, p);
+
             //Ball
+            p.setColor(Color.rgb(38, 70, 83));
             canvas.drawOval(oval, p);
+
+            //Score
+            Paint paint = new Paint();
+
+            paint.setColor(Color.WHITE);
+            paint.setTextSize(60);
+            paint.setTypeface(Typeface.create("Arial", Typeface.BOLD));
+            canvas.drawText(MainActivity.a + " - " + MainActivity.b, 16, 60, paint);
 
             invalidate();
         }
